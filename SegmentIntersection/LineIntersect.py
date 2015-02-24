@@ -74,8 +74,6 @@ class Line(object):
 	A=property(fget=__getA,fset=__setA)
 	B=property(fget=__getB,fset=__setB)
 class SegmentIntersection:
-	def __det(s,A,B,C):
-		return A.x*(B.y-C.y)+B.x*(C.y-A.y)+C.x*(A.y-B.y)
 	def __ccw(s,A,B,C):
 		return (C.y-A.y)*(B.x-A.x) > (B.y-A.y)*(C.x-A.x)
 	def intersect(s,A,B,C,D):

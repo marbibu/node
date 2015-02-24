@@ -81,40 +81,6 @@ function Point(C,x,y){
 
 
 
-//trzeba utworzyc bindowanie
-function Point(C,x,y){
-	//Dane:
-	var that=this;
-	this.__C=C;
-	this.__x=x;
-	this.__y=y;
-	return this;
-};
-Point.prototype.number=0;
-Point.prototype.__genTag=function (){
-	Point.prototype.number++;
-	return "Point_"+Point.prototype.number;
-};
-Point.prototype.draw=function(){
-	this.__C.drawArc({
-	  	fillStyle: 'gray',
-	  	strokeStyle:'#333333',
-	  	width:0.1,
-	  	layer:true,
-	  	name:this.__tag,
-	  	groups:["points"],
-	  	x: this.__x,
-	  	y: this.__y,
-	  	radius:6
-	});
-};
-Point.prototype.create=function(){
-	//Dane:
-	this.__tag=this.__genTag();
-	//Definicje:
-	this.draw();
-};
-
 // Point.prototype.getx=function(){
 // 	return this.__x;
 // };

@@ -1,0 +1,11 @@
+{
+	"name":"MojChat",
+	"version":"0.0.0",
+	"private":"true",
+	"dependencies":{
+		"socket.io":"1.3.2",
+		"express":"4.11.1",
+		"jquery":"2.1.3",
+		"body-parser":"1.11.0"
+	}
+}

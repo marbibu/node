@@ -134,25 +134,9 @@ Polygon.prototype.__checkPoint=function(point){
 	if(this.__len<3){
 		return true;
 	}else{
-		// var A=;
-		// var B=point;
-		
-		// console.log("probuje dodac punkt"+(this.__len-2));
-		
 		var p=this.__checkSegmentLast(this.__points[this.__len-1],point);
 		var q=this.__checkSegmentFirst(this.__points[0],point);
 		return p && q;
-
-
-		// if (a>0){
-			// return false;
-		// }
-		// else{
-			// return true;
-		// }
-		// return true;
-		// console.log("przecina sie "+a+"razy");
-		// return true;
 	}
 };
 
@@ -295,21 +279,10 @@ io.sockets.on('connection', function(socket){
 		console.log(socket.nickname+" chce umiescic punkt ("+data.x+", "+data.y+").");
         // var polygon=socket.poly;
         // //tu trzeba bedzie sprawdzic czy punkt mozna wstawic...
-        var permission=socket.polygon.addPoint(data.x,data.y);
+        var permission=socket.polygon.addPoint(data.x/3.0,data.y/3.0);
+        var parameters=socket.polygon.getParameters();
+        callback(data,parameters,permission);
 
-        console.log("czy moge postawic punkt? "+permission);
-        callback(data,permission);
-
-
-
-
-        // if(polygon.checkPoint(data.x,data.y)){
-        //     polygon.addPoint(data.x,data.y);
-        //     var newData=polygon.createObject();
-        //     callback(newData,true);
-        // } else{
-        //     callback(null,false);
-        // }
     });
 
 	socket.on('disconnect',function(){

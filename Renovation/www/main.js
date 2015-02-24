@@ -67,58 +67,62 @@ function Polygon(C){
 		this.__update();
 	};
 };
-function Board(canvasTag,w,h,a,socket){
+function ParametersMenu(){
+	this.setParameters=function(parameters){
+		$("#A").html(Math.round(parameters.A*100)/100);
+    	$("#Cx").html(Math.round(parameters.Cx*100)/100);
+    	$("#Cy").html(Math.round(parameters.Cy*100)/100);
+    	$("#Ix").html(Math.round(parameters.Ix*100)/100);
+    	$("#Iy").html(Math.round(parameters.Iy*100)/100);
+    	$("#Ixy").html(Math.round(parameters.Ixy*100)/100);
+	}
+}
+function CoordsMenu(){
+	this.setCoords=function(x,y){
+		$("#X").html(Math.round(x/3.0*100)/100);
+		$("#Y").html(Math.round(y/3.0*100)/100);
+	}
+}
+
+function Board(canvasTag,w,h,a,socket,paramMenu,coordsMenu){
 	that=this;
 	this.__C=$('#'+canvasTag);
 	this.__w=w;
 	this.__h=h;
 	this.__grid=new Grid(this.__C,w,h,a);
 	this.__socket=socket;
+	this.__paramMenu=paramMenu;
+	this.__coordsMenu=coordsMenu;
 	this.__polygon=new Polygon(this.__C);
 	this.__polygon.draw();
 
 	this.getC=function(){
 		return this.__C;
-	}
+	};
+	this.getCurrentX=function(event){
+		return event.pageX-this.__C.position().left-15;
+	};
+	this.getCurrentY=function(event){
+		return event.pageY-this.__C.position().top-15;
+	};
 	this.__bind=function(){
+		this.__C.mousemove(function(event){
+		  	that.__coordsMenu.setCoords(
+		  		that.getCurrentX(event),
+		  		that.getCurrentY(event)
+		  		);
+		});
 		this.__C.click(function(event){
-			var X = event.pageX-that.__C.position().left-15,
-		  		Y = event.pageY-that.__C.position().top-15;
-		  	//var x=that.__coo.convertX2x(X);
-		  	//var y=that.__coo.convertY2y(Y);
-		  	// that.newPoint(x,y);
-		  	that.__socket.emit('sendPoint',{x:X,y:Y},function(data,permission){
+			var obj={
+				x:that.getCurrentX(event),
+				y:that.getCurrentY(event)
+			}
+		  	that.__socket.emit('sendPoint',obj,function(data,parameters,permission){
 		  		if(permission){
 		  			that.__polygon.addPoint(data.x,data.y);
+		  			that.__paramMenu.setParameters(parameters);
 		  		}
-		  		// console.log("Odbieram punkt i mam pozwolenie "+data.x+","+data.y);
-
-		  		// if (permission){
-		  		// 	that.__polygon.addPoint(data.x,data.y);
-		  		// 	//console.log("Odbieram punkt i mam pozwolenie");
-		  		// 	//pobranie parametrow
-		  		// }
 		  	});
-		 //  		var str="";
-
-   //          	// var data=JSON.parse(response);
-   //          	//var keys=Object.keys(data);
-
-   //          	if(data==null){
-
-   //          	} else{
-   //          		$("#A").html(Math.round(data.area*100)/100);
-	  //           	$("#Cx").html(Math.round(data.cx*100)/100);
-	  //           	$("#Cy").html(Math.round(data.cy*100)/100);
-	  //           	$("#Ix").html(Math.round(data.Ix*100)/100);
-	  //           	$("#Iy").html(Math.round(data.Iy*100)/100);
-	  //           	$("#Ixy").html(Math.round(data.Ixy*100)/100);
-   //          	}
-            	
-   //          	if(truth){
-   //          		that.newPoint(x,y);
-   //          	}
-			// });
 		});
 	};
 	this.__bind();
@@ -144,8 +148,9 @@ function LoggedClientsMenu(){
 $(document).ready(function (){
 
 	var socket = io.connect();
-
-	var board=new Board("page",600,855,15,socket);
+	var paramMenu=new ParametersMenu();
+	var coordsMenu=new CoordsMenu();
+	var board=new Board("page",600,855,15,socket,paramMenu,coordsMenu);
 	var clientsM=new LoggedClientsMenu();
 
 

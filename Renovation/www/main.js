@@ -66,6 +66,13 @@ function Polygon(C){
 		this.__points.push(point);
 		this.__update();
 	};
+	this.clear=function(){
+		this.__C.removeLayerGroup('points');
+		this.__C.removeLayerGroup('poly');
+		this.__points=[];
+		this.draw();
+		this.__C.drawLayers();
+	}
 };
 function ParametersMenu(){
 	this.setParameters=function(parameters){
@@ -75,15 +82,14 @@ function ParametersMenu(){
     	$("#Ix").html(Math.round(parameters.Ix*100)/100);
     	$("#Iy").html(Math.round(parameters.Iy*100)/100);
     	$("#Ixy").html(Math.round(parameters.Ixy*100)/100);
-	}
-}
+	};
+};
 function CoordsMenu(){
 	this.setCoords=function(x,y){
 		$("#X").html(Math.round(x/3.0*100)/100);
 		$("#Y").html(Math.round(y/3.0*100)/100);
-	}
-}
-
+	};
+};
 function Board(canvasTag,w,h,a,socket,paramMenu,coordsMenu){
 	that=this;
 	this.__C=$('#'+canvasTag);
@@ -105,6 +111,9 @@ function Board(canvasTag,w,h,a,socket,paramMenu,coordsMenu){
 	this.getCurrentY=function(event){
 		return event.pageY-this.__C.position().top-15;
 	};
+	this.clearPolygon=function(){
+		this.__polygon.clear();
+	}
 	this.__bind=function(){
 		this.__C.mousemove(function(event){
 		  	that.__coordsMenu.setCoords(
@@ -127,7 +136,36 @@ function Board(canvasTag,w,h,a,socket,paramMenu,coordsMenu){
 	};
 	this.__bind();
 };
+function ClearButton(board,socket){
+	var that=this;
+	this.__B=$("#clearButton");
+	this.__board=board;
+	this.__socket=socket;
+	this.__bind=function(){
+		this.__B.click(function(event){
+			that.__board.clearPolygon();
+			that.__socket.emit("removePolygon");
+		});
+	};
+	this.__bind();
+};
+function PublishButton(board,socket){
+	var that=this;
+	this.__B=$("#publishButton");
+	this.__board=board;
+	this.__socket=socket;
+	this.__bind=function(){
+		this.__B.click(function(event){
 
+			that.__socket.emit("publishPolygon",function(){
+				that.__board.clearPolygon();
+				that.__socket.emit("removePolygon");
+			});
+			//poki co narazie publikowanie tylko jednego polygona
+		});
+	};
+	this.__bind();
+}
 function LoggedClientsMenu(){
 	//Funkcja, ktora zarzadza menu wyswietlajacym zalogowanych klientow
 	this.__tag=$("#clientsOnlineMenu");
@@ -141,16 +179,45 @@ function LoggedClientsMenu(){
 	}
 }
 
+function Mini(C,points){
+	this.__C=C;
+	this.__points=points;
+	this.__draw=function(){
+		this.__C.drawLine({
+			strokeStyle: "gray",
+			fillStyle:"gold",
+			groups:['poly'],
+			strokeWidth: 0.5,
+			layer: true,
+			name:'polygon',
+			closed:true
+		});
 
+
+		var obj={};
+		var i=0;
+		for(i;i<this.__points.length;i++){
+			obj['x'+(i+1)] = this.__points[i].x/4.0;
+		  	obj['y'+(i+1)] = this.__points[i].y/4.0;
+		}
+		this.__C.setLayer('polygon',obj);
+		this.__C.drawLayers();
+	};
+	this.__draw();
+};
 
 
 
 $(document).ready(function (){
-
+	var minis_counter=0;
 	var socket = io.connect();
 	var paramMenu=new ParametersMenu();
 	var coordsMenu=new CoordsMenu();
 	var board=new Board("page",600,855,15,socket,paramMenu,coordsMenu);
+
+	var buttonClear=new ClearButton(board,socket);
+	var buttonPublish=new PublishButton(board,socket);
+
 	var clientsM=new LoggedClientsMenu();
 
 
@@ -159,23 +226,17 @@ $(document).ready(function (){
 	});
 
 	socket.on('updateClientsOnline',function(clients){
-		// if($('#clientsOnlineMenu').length == 0) {
-		// 	alert("nie istnieje...");
-		// }
 		clientsM.setClientsOnlineList(clients);
 	});
 
-
-	
-	// socket.on('getClientsOnlineInfo',function(){
-	// 	clientsM.setClientsOnlineList(clients);
-	// });
-
-
-	// var board=new Board("page",600,855,15);
-	// var point=new Point(board.getC(),50,50,0,0);
-	// point.create();
-
-	// new LoginForm("");
-
+	socket.on("newMini",function(points,author){
+		minis_counter+=1;
+		var tag="mini"+minis_counter;
+		$("#publishedPolygon").prepend("\
+			<script></script>\
+			<div class='mini'><canvas id='"+tag+"' \
+			width=50 height=72></canvas><span>"+author+"\
+			</span><div class='endFloat'></div></div>");
+		var mini=new Mini($("#"+tag),points);
+	});
 });

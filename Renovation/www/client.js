@@ -115,6 +115,7 @@ $(document).ready(function (){
 	    event.preventDefault();
 		socket.emit('login',$('#nickname').val(),function(data,nickname){
 			if (data){
+				$('#optionBar').load("/dock.html");
 				$('#mainContent').load("/main.html");
 				loggedNick.setNickname(nickname);
 			} else{

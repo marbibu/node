@@ -139,7 +139,9 @@ Polygon.prototype.__checkPoint=function(point){
 		return p && q;
 	}
 };
-
+Polygon.prototype.getPoints=function(){
+	return this.__points;
+};
 Polygon.prototype.getParameters=function(){
     return {A: this.__area(),
             Cx: this.__cx(),
@@ -177,9 +179,6 @@ function ClientManager(validation){
 	this.getNicks=function(){
 		return this.__nicks;
 	};
-	this.addPoint=function(x,y){
-		socket.polygon.addPoint(x,y);
-	};
 }
 function ClientValidation(){
 	/*funkcja, ktora przeprowadza walidacje podanego nicku*/
@@ -206,23 +205,24 @@ function IsNotExisting(clientM){
 	this.validate=function(nickname){
 		return !this.__clientM.clientExists(nickname);
 	}
-}
+};
 function IsNotEmpty(){
 	//Sprawdza czy nick nie jest pusty
 	this.validate=function(nickname){
 		return nickname!="";
 	}
-}
+};
+function PolygonManager(){
+	this.__polygons=[];
+	this.addPolygon=function(points,author){
+		obj={
+			points:point,
+			author:author
+		};
+		this.__polygons.add(obj);
+	}
+};
 
-// def __det(s,A,B,C):
-// 	return A.x*(B.y-C.y)+B.x*(C.y-A.y)+C.x*(A.y-B.y)
-// def __ccw(s,A,B,C):
-// 	return (C.y-A.y)*(B.x-A.x) > (B.y-A.y)*(C.x-A.x)
-// def intersect(s,A,B,C,D):
-// 	if s.__ccw(A,C,D) != s.__ccw(B,C,D) and s.__ccw(A,B,C) != s.__ccw(A,B,D):
-// 		print "przecina sie"
-// 	else:
-// 		print "nie przecina sie"
 
 
 var express = require('express'),
@@ -284,7 +284,16 @@ io.sockets.on('connection', function(socket){
         callback(data,parameters,permission);
 
     });
-
+    socket.on('removePolygon',function(){
+    	console.log(socket.nickname+" czysci polygon.");
+    	socket.polygon=new Polygon();
+    });
+    socket.on('publishPolygon',function(callback){
+    	console.log(socket.nickname+" opublikowal wielokat.");
+    	//trzeba zapisac poligon w managerze...
+    	callback();
+    	io.sockets.emit("newMini",socket.polygon.getPoints(),socket.nickname);
+    });
 	socket.on('disconnect',function(){
 		if(socket.nickname===undefined){
         } else{

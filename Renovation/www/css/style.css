@@ -11,6 +11,9 @@ span{
 #topBar{
 	height:20px;
 	background: #333333;
+	position:fixed;
+	width:100%;
+	top:0px;
 }
 #topBar>span{
 	color:gray;
@@ -21,13 +24,14 @@ span{
 	margin-left:5px;
 }
 #optionBar{
+	margin-top:20px;
 	background:gray;
 	height:51px;
 }
 #dock{
 	/*border:1px solid #333333;*/
 	/*background: #333333;*/
-	width:200px;
+	width:100px;
 	height:50px;
 	margin-left:auto;
 	margin-right:auto;
@@ -51,6 +55,7 @@ span{
 	margin-top:2px;
 	margin-left:10px;
 	border:1px solid #333333;
+	background:gray;
 }
 .iconBG p{
 	/*bottom:5px;*/
@@ -65,6 +70,7 @@ span{
 	width:1236px;
 	margin-left:auto;
 	margin-right:auto;
+	margin-bottom:20px;
 }
 #mainContent>h2{
 	color:#333333;
@@ -137,6 +143,10 @@ span{
 }
 .scrollable{
 	cursor: default;
+	overflow-y: auto;
+}
+#clientsOnlineMenu{
+	height:300px;
 }
 .onlineUser{
 	width:200px;
@@ -154,11 +164,46 @@ span{
 	color:#333333;
 	
 }
+
 /*.onlineUser:hover{
 	background:#333333;
 	color:gray;
 }*/
-
+#publishedPolygon{
+	height:440px;
+	width:100%;
+}
+.mini{
+	border:1px solid #000;
+	margin-top:2px;
+	margin-left:auto;
+	margin-right:auto;
+	padding:5px;
+	/*padding-top::5px;*/
+	/*padding-bottom:5px;*/
+	width:200px;
+	border-radius: 5px;
+	/*vertical-align: middle;*/
+	/*height: 74px;*/
+	/*line-height: 74px;*/
+}
+.mini canvas{
+	background:#fffff0;
+	display: block;
+	float:left;
+	border:1px solid #333333;
+}
+.mini span{
+	height:74px;
+	line-height: 74px;
+	vertical-align: middle;
+	margin-left:10px;
+	font-family: Monaco;
+	color:#333333;
+	display: block;
+	margin-top:0px;
+	float:left;
+}
 
 #paper{
 	width:630px;
@@ -194,14 +239,19 @@ span{
 	margin-bottom: 0px;
 	margin-top:4px;
 }
-
-#miniMenu{
+#footer{
 	background:#333333;
 	height:20px;
 	width:100%;
 	position: fixed;
 	bottom:0px;
 	opacity: 0.97;
+	color:gray;
+	text-align: center;
+	font-size: 10px;
+	line-height: 20px;
+	vertical-align: middle;
+	margin-top:10px;
 }
 .endFloat{
 	clear:both;

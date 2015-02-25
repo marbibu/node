@@ -47,7 +47,6 @@ function Grid(C,w,h,a){
 	};
 	this.__init__(C,w,h,a);
 };
-
 function Point(C,x,y){
 	var s=this;
 	s.__C=C;
@@ -55,45 +54,6 @@ function Point(C,x,y){
 	s.__y=y;
 	return this;
 }
-
-// Point.prototype.number=0;
-// Point.prototype.__genTag=function (){
-// 	Point.prototype.number++;
-// 	return "Point_"+Point.prototype.number;
-// };
-// Point.prototype.__draw=function(){
-// 	s.__C.drawArc({
-// 	  	fillStyle: 'brown',
-// 	  	strokeStyle:'orange',
-// 	  	width:0.1,
-// 	  	layer:true,
-// 	  	name:s.__tag,
-// 	  	groups:["points"],
-// 	  	x: s.__x,
-// 	  	y: s.__y,
-// 	  	radius:6
-// 	});
-// };
-// Point.prototype.create=function(){
-// 	s.__tag=s.__genTag();
-// 	s.draw();
-// }
-
-
-
-// Point.prototype.getx=function(){
-// 	return this.__x;
-// };
-// Point.prototype.gety=function(){
-// 	return this.__y;
-// };
-// Point.prototype.getX=function(){
-// 	return this.__X;
-// };
-// Point.prototype.getY=function(){
-// 	return this.__Y;
-// };
-
 function LoggedNickDisplay(){
 	//Funkcja, ktora zarzadza wyswietlaniem nazwy zalogowango klienta
 	this.__tag=$("#topBar>span");
@@ -123,14 +83,6 @@ $(document).ready(function (){
 			}
 		});
 	});
-
-	// socket.on('updateClientsOnline',function(clients){
-		// if($('#clientsOnlineMenu').length == 0) {
-		// 	alert("nie istnieje...");
-		// }
-		// alert("hej2");
-		// clientsM.setClientsOnlineList(clients);
-	// });
 });
 
 

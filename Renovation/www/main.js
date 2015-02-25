@@ -83,6 +83,14 @@ function ParametersMenu(){
     	$("#Iy").html(Math.round(parameters.Iy*100)/100);
     	$("#Ixy").html(Math.round(parameters.Ixy*100)/100);
 	};
+	this.setDefault=function(){
+		$("#A").html("-");
+    	$("#Cx").html("-");
+    	$("#Cy").html("-");
+    	$("#Ix").html("-");
+    	$("#Iy").html("-");
+    	$("#Ixy").html("-");
+	}
 };
 function CoordsMenu(){
 	this.setCoords=function(x,y){
@@ -224,6 +232,19 @@ $(document).ready(function (){
 	socket.emit('getClientsOnline',function(clients){
 		clientsM.setClientsOnlineList(clients);
 	});
+	socket.emit('getMinis',function(minis){
+		var i=0;
+		for(i;i<minis.length;i++){
+			minis_counter+=1;
+			var tag="mini"+minis_counter;
+			$("#publishedPolygon").prepend("\
+				<script></script>\
+				<div class='mini'><canvas id='"+tag+"' \
+				width=50 height=72></canvas><span>"+minis[i].author+"\
+				</span><div class='endFloat'></div></div>");
+			var mini=new Mini($("#"+tag),minis[i].points);
+		}
+	});
 
 	socket.on('updateClientsOnline',function(clients){
 		clientsM.setClientsOnlineList(clients);
@@ -238,5 +259,6 @@ $(document).ready(function (){
 			width=50 height=72></canvas><span>"+author+"\
 			</span><div class='endFloat'></div></div>");
 		var mini=new Mini($("#"+tag),points);
+		paramMenu.setDefault();
 	});
 });

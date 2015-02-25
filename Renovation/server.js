@@ -151,6 +151,9 @@ Polygon.prototype.getParameters=function(){
             Ixy: this.__Ixy()
            };
 };
+Polygon.prototype.getLength=function(){
+	return this.__len;
+};
 
 function ClientManager(validation){
 	//Zarzadza
@@ -212,15 +215,20 @@ function IsNotEmpty(){
 		return nickname!="";
 	}
 };
+
+//
 function PolygonManager(){
 	this.__polygons=[];
 	this.addPolygon=function(points,author){
 		obj={
-			points:point,
+			points:points,
 			author:author
 		};
-		this.__polygons.add(obj);
-	}
+		this.__polygons.push(obj);
+	};
+	this.getPolygons=function(){
+		return this.__polygons;
+	};
 };
 
 
@@ -251,6 +259,8 @@ console.log("Start serwera http://127.0.0.1:"+3000+"\n...");
 
 var clientV=new ClientValidation();
 var clientM=new ClientManager(clientV);
+var polygonM=new PolygonManager();
+
 clientV.addValidation(new IsNotExisting(clientM));
 clientV.addValidation(new IsNotEmpty());
 
@@ -263,7 +273,7 @@ io.sockets.on('connection', function(socket){
 	socket.on('login',function(data,callback){
 		if (clientM.addClient(socket,data)){
 			console.log("New client with nick: "+data+" has logged.")
-			callback(true,data.substr(0,1).toUpperCase()+data.substr(1,data.length));
+			callback(true,data);
 			io.sockets.emit('updateClientsOnline',clientM.getNicks());
 		}else{
 			console.log("Someone was trying to log as "+data+", without success...")
@@ -273,12 +283,13 @@ io.sockets.on('connection', function(socket){
 	socket.on('getClientsOnline',function(callback){
 		callback(clientM.getNicks());
 	});
+	socket.on('getMinis',function(callback){
+		callback(polygonM.getPolygons());
+	});
 
 
 	socket.on('sendPoint',function(data,callback){
 		console.log(socket.nickname+" chce umiescic punkt ("+data.x+", "+data.y+").");
-        // var polygon=socket.poly;
-        // //tu trzeba bedzie sprawdzic czy punkt mozna wstawic...
         var permission=socket.polygon.addPoint(data.x/3.0,data.y/3.0);
         var parameters=socket.polygon.getParameters();
         callback(data,parameters,permission);
@@ -289,10 +300,16 @@ io.sockets.on('connection', function(socket){
     	socket.polygon=new Polygon();
     });
     socket.on('publishPolygon',function(callback){
-    	console.log(socket.nickname+" opublikowal wielokat.");
-    	//trzeba zapisac poligon w managerze...
-    	callback();
-    	io.sockets.emit("newMini",socket.polygon.getPoints(),socket.nickname);
+    	if(socket.polygon.getLength()<3){
+
+    	}else{
+    		console.log(socket.nickname+" opublikowal wielokat.");
+	    	//trzeba zapisac poligon w managerze...
+	    	var points=socket.polygon.getPoints();
+	    	polygonM.addPolygon(points,socket.nickname);
+	    	callback();
+	    	io.sockets.emit("newMini",points,socket.nickname);
+    	}
     });
 	socket.on('disconnect',function(){
 		if(socket.nickname===undefined){
